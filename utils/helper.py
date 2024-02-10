@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import streamlit as st
 import cv2
 import utils.settings as settings_module
+import numpy as np
+import supervision as sv
 
 class AccidentDetectionHelper:
     def __init__(self):
@@ -20,6 +22,28 @@ class AccidentDetectionHelper:
         """
         model = YOLO(model_path)
         return model
+    
+    def filter_detection(self, result, class_id):
+        """
+        Filter detections for a particular class.
+
+        Parameters:
+            result (dict): Dictionary containing YOLOv8 detection results.
+            class_id (int): ID of the class to filter detections for.
+
+        Returns:
+            dict: Filtered detection results.
+        """
+        # Convert YOLOv8 detection results to Supervision Detections object
+        detections = sv.Detections.from_ultralytics(result[0])
+
+        # Filter detections for the specified class
+        filtered_detections = detections[detections.class_id == class_id]
+
+        # Convert filtered detections back to YOLOv8 result format
+        #filtered_result = filtered_detections.to_yolov8()
+
+        return filtered_detections
 
     def display_tracker_options(self):
         display_tracker = 'Yes'
@@ -144,8 +168,15 @@ class AccidentDetectionHelper:
 
                         # Display the detected objects on the video frame
                         res = model.predict(image_resized, conf=conf)
-                        res_plotted = res[0].plot()
-                        st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_column_width=True)
+                        # Filter detections for class ID 0
+                        filtered_result = self.filter_detection(res, class_id=0)
+                        # Draw filtered detections on the image
+                        for detection in filtered_result.xyxy:
+                            x1, y1, x2, y2 = map(int, detection)
+                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+                        #res_plotted = filtered_result[0].plot()
+                        st_frame.image(image_resized, caption='Detected Video', channels="BGR", use_column_width=True)
 
                     else:
                         vid_cap.release()
