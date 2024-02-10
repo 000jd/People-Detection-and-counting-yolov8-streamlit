@@ -6,6 +6,7 @@ import utils.helper as helper_module
 
 class AccidentDetectionApp:
     def __init__(self):
+        # Set Streamlit page configuration
         st.set_page_config(
             page_title="People Detection",
             page_icon="🤖",
@@ -13,16 +14,26 @@ class AccidentDetectionApp:
             initial_sidebar_state="expanded"
         )
 
+        # Initialize settings and helper modules
         self.settings = settings_module.AccidentDetectionSettings()
-
         self.helper = helper_module.AccidentDetectionHelper()
 
+        # Initialize model, confidence, source_radio, and source_img
         self.model = None
         self.confidence = None
         self.source_radio = None
         self.source_img = None
 
     def load_model(self, model_path):
+        """
+        Load the YOLO object detection model from the specified model_path.
+
+        Parameters:
+            model_path (str): The path to the YOLO model file.
+
+        Returns:
+            None
+        """
         try:
             self.model = self.helper.load_model(model_path)
         except Exception as ex:
@@ -31,6 +42,12 @@ class AccidentDetectionApp:
             st.error(ex)
 
     def show_detection_page(self):
+        """
+        Display the main content for detection based on user-selected options.
+
+        Returns:
+            None
+        """
         st.title("People Detection")
 
         # Sidebar
@@ -90,16 +107,21 @@ class AccidentDetectionApp:
                             st.write("No image is uploaded yet!")
 
         elif self.source_radio == self.settings.VIDEO:
-            self.helper.video_clsifiction(self.confidence, self.model)
+            self.helper.video_classification(self.confidence, self.model)
 
         elif self.source_radio == self.settings.DRONE:
-            # Functionality for Drone Camera
-            pass
+            self.helper.drone_camera_classification(self.confidence, self.model)
 
         else:
             st.error("Please select a valid source type!")
 
     def run(self):
+        """
+        Run the accident detection app by loading the model and displaying the detection page.
+
+        Returns:
+            None
+        """
         self.load_model(Path(self.settings.DETECTION_MODEL))
         self.show_detection_page()
 

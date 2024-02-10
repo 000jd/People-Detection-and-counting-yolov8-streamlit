@@ -1,11 +1,12 @@
 from ultralytics import YOLO
 import streamlit as st
 import cv2
-import utils.settings as settings
+import utils.settings as settings_module
 
 class AccidentDetectionHelper:
     def __init__(self):
-        pass
+        # Initialize settings and helper modules
+        self.settings = settings_module.AccidentDetectionSettings()
 
     def load_model(self, model_path):
         """
@@ -60,9 +61,9 @@ class AccidentDetectionHelper:
                     use_column_width=True
                     )
 
-    def play_drone_video(self, conf, model):
+    def drone_camera_classification(self, conf, model):
         """
-        Plays a drone video stream. Detects Objects in real-time using the YOLOv8 object detection model.
+        Detects objects in real-time using the YOLOv8 object detection model with a drone camera.
 
         Parameters:
             conf: Confidence of YOLOv8 model.
@@ -70,11 +71,36 @@ class AccidentDetectionHelper:
 
         Returns:
             None
-
-        Raises:
-            None
         """
-        pass  
+        source = st.sidebar.radio("Select Source", ("IP Cam", "Webcam"))
+
+        if source == "IP Cam":
+            # Functionality for IP Cam
+            pass
+        elif source == "Webcam":
+            source_webcam = self.settings.WEBCAM_PATH
+            is_display_tracker, tracker = self.display_tracker_options()
+            if st.sidebar.button('Detect Objects'):
+                try:
+                    vid_cap = cv2.VideoCapture(source_webcam)
+                    st_frame = st.empty()
+                    while vid_cap.isOpened():
+                        success, image = vid_cap.read()
+                        if success:
+                            self._display_detected_frames(conf,
+                                                        model,
+                                                        st_frame,
+                                                        image,
+                                                        is_display_tracker,
+                                                        tracker,
+                                                        )
+                        else:
+                            vid_cap.release()
+                            break
+                except Exception as e:
+                    st.sidebar.error("Error loading video: " + str(e))
+        else:
+            st.sidebar.error("Error processing video Source") 
 
     def play_video(self, conf, model, video_path):
         vid_cap = cv2.VideoCapture(video_path)

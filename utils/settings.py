@@ -35,4 +35,7 @@ class AccidentDetectionSettings:
         self.MODEL_DIR = self.ROOT / 'weights'
         self.DETECTION_MODEL = self.MODEL_DIR / 'yolov8n.pt'
 
+        # Webcam
+        self.WEBCAM_PATH = 0
+
 
