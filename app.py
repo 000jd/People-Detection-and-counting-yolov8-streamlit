@@ -1,17 +1,22 @@
 from pathlib import Path
 import PIL
 import streamlit as st
-import utils.settings as settings
-import utils.helper as helper
+import utils.settings as settings_module
+import utils.helper as helper_module
 
 class AccidentDetectionApp:
     def __init__(self):
         st.set_page_config(
-            page_title="Accident Detection",
+            page_title="People Detection",
             page_icon="🤖",
             layout="wide",
             initial_sidebar_state="expanded"
         )
+
+        self.settings = settings_module.AccidentDetectionSettings()
+
+        self.helper = helper_module.AccidentDetectionHelper()
+
         self.model = None
         self.confidence = None
         self.source_radio = None
@@ -19,14 +24,14 @@ class AccidentDetectionApp:
 
     def load_model(self, model_path):
         try:
-            self.model = helper.load_model(model_path)
+            self.model = self.helper.load_model(model_path)
         except Exception as ex:
             st.error(
                 f"Unable to load model. Check the specified path: {model_path}")
             st.error(ex)
 
     def show_detection_page(self):
-        st.title("Accident Detection")
+        st.title("People Detection")
 
         # Sidebar
         st.sidebar.header("Navigation")
@@ -36,10 +41,10 @@ class AccidentDetectionApp:
             "Select Model Confidence", 25, 100, 40)) / 100
 
         self.source_radio = st.sidebar.radio(
-            "Select Source", settings.SOURCES_LIST)
+            "Select Source", self.settings.SOURCES_LIST)
 
         # Main content for Detection
-        if self.source_radio == settings.IMAGE:
+        if self.source_radio == self.settings.IMAGE:
             self.source_img = st.sidebar.file_uploader(
                 "Choose an image...", type=("jpg", "jpeg", "png", 'bmp', 'webp'))
 
@@ -48,7 +53,7 @@ class AccidentDetectionApp:
             with col1:
                 try:
                     if self.source_img is None:
-                        default_image_path = str(settings.DEFAULT_IMAGE)
+                        default_image_path = str(self.settings.DEFAULT_IMAGE)
                         default_image = PIL.Image.open(default_image_path)
                         st.image(default_image_path, caption="Default Image",
                                 use_column_width=True)
@@ -62,7 +67,7 @@ class AccidentDetectionApp:
 
             with col2:
                 if self.source_img is None:
-                    default_detected_image_path = str(settings.DEFAULT_DETECT_IMAGE)
+                    default_detected_image_path = str(self.settings.DEFAULT_DETECT_IMAGE)
                     default_detected_image = PIL.Image.open(
                         default_detected_image_path)
                     st.image(default_detected_image_path, caption='Detected Image',
@@ -84,10 +89,10 @@ class AccidentDetectionApp:
                         except Exception as ex:
                             st.write("No image is uploaded yet!")
 
-        elif self.source_radio == settings.VIDEO:
-            helper.video_clsifiction(self.confidence, self.model)
+        elif self.source_radio == self.settings.VIDEO:
+            self.helper.video_clsifiction(self.confidence, self.model)
 
-        elif self.source_radio == settings.DRONE:
+        elif self.source_radio == self.settings.DRONE:
             # Functionality for Drone Camera
             pass
 
@@ -95,7 +100,7 @@ class AccidentDetectionApp:
             st.error("Please select a valid source type!")
 
     def run(self):
-        self.load_model(Path(settings.DETECTION_MODEL))
+        self.load_model(Path(self.settings.DETECTION_MODEL))
         self.show_detection_page()
 
 app = AccidentDetectionApp()

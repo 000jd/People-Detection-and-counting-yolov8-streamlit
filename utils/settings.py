@@ -33,6 +33,6 @@ class AccidentDetectionSettings:
 
         # ML Model config
         self.MODEL_DIR = self.ROOT / 'weights'
-        self.DETECTION_MODEL = self.MODEL_DIR / 'best.pt'
+        self.DETECTION_MODEL = self.MODEL_DIR / 'yolov8n.pt'
 
-settings = AccidentDetectionSettings()
+

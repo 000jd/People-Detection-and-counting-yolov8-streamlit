@@ -18,7 +18,6 @@ class AccidentDetectionHelper:
             A YOLO object detection model.
         """
         model = YOLO(model_path)
-        model.classes = ["Accident"]
         return model
 
     def display_tracker_options(self):
@@ -129,4 +128,4 @@ class AccidentDetectionHelper:
                 vid_cap.release()
                 st.sidebar.error("Error processing video: " + str(e))
 
-helper = AccidentDetectionHelper()
+
