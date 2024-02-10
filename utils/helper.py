@@ -69,7 +69,7 @@ class AccidentDetectionHelper:
         """
 
         # Resize the image to a standard size
-        image = cv2.resize(image, (720, int(720*(9/16))))
+        image_resized = cv2.resize(image, (720, int(720*(9/16))))
 
         # Display object tracking, if specified
         if is_display_tracking:
@@ -77,9 +77,14 @@ class AccidentDetectionHelper:
         else:
             # Predict the objects in the image using the YOLOv8 model
             res = model.predict(image, conf=conf)
-        # Plot the detected objects on the video frame
-        res_plotted = res[0].plot()
-        st_frame.image(res_plotted,
+        # Filter detections for class ID 0
+        filtered_result = self.filter_detection(res, class_id=0)
+        # Draw filtered detections on the image
+        for detection in filtered_result.xyxy:
+            x1, y1, x2, y2 = map(int, detection)
+            cv2.rectangle(image_resized, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            
+        st_frame.image(image_resized,
                     caption='Detected Video',
                     channels="BGR",
                     use_column_width=True
