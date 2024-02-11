@@ -10,6 +10,7 @@ class DetectionHelper:
         # Initialize settings and helper modules
         self.settings = settings_module.DetectionSettings()
 
+        # Variable for storing total detactions
         self.total_detections = 0
 
     def load_model(self, model_path):
@@ -77,7 +78,7 @@ class DetectionHelper:
             # Predict the objects in the image using the YOLOv8 model
             res = model.predict(image, conf=conf)
         # Filter detections for class ID 0
-        filtered_result = self.filter_detection(res, class_id=0)
+        filtered_result = self.filter_detection(res, class_ids=self.settings.CLASS_IDS)
 
         # counts the number of detactions
         self.total_detections = len(filtered_result)
@@ -107,9 +108,34 @@ class DetectionHelper:
         source = st.sidebar.radio("Select Source", ("IP Cam", "Webcam"))
 
         if source == "IP Cam":
+            ip_cam_url = st.sidebar.text_input("Enter IP Cam URL:")
+            if not ip_cam_url:
+                st.sidebar.info("Please enter the IP Cam URL.")
+                return
+            
             # Functionality for IP Cam
-            pass
+            try:
+                vid_cap = cv2.VideoCapture(ip_cam_url)
+                st_frame = st.empty()
+                is_display_tracker, tracker = self.display_tracker_options()
+                while vid_cap.isOpened():
+                    success, image = vid_cap.read()
+                    if success:
+                        self._display_detected_frames(conf,
+                                                    model,
+                                                    st_frame,
+                                                    image,
+                                                    is_display_tracker,
+                                                    tracker,
+                                                    )
+                    else:
+                        vid_cap.release()
+                        break
+            except Exception as e:
+                st.sidebar.error("Error loading video: " + str(e))
+                
         elif source == "Webcam":
+            st.sidebar.info("Please connect webcam befor use")
             source_webcam = self.settings.WEBCAM_PATH
             is_display_tracker, tracker = self.display_tracker_options()
             if st.sidebar.button('Detect Objects'):

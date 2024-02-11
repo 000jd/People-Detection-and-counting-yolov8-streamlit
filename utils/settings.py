@@ -61,7 +61,7 @@ class DetectionSettings:
         self.DETECTION_MODEL = self.MODEL_DIR / 'yolov8n.pt'
 
         # Webcam
-        self.WEBCAM_PATH = 0
+        self.WEBCAM_PATH = 1
 
         # Specify custom color in (B, G, R)
         self.COUSTOM_COLOR = (59, 181, 136)  
