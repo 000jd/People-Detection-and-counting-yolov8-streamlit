@@ -64,7 +64,10 @@ class DetectionSettings:
         self.WEBCAM_PATH = 1
 
         # Specify custom color in (B, G, R)
-        self.COUSTOM_COLOR = (59, 181, 136)  
+        self.COUSTOM_COLOR = (59, 181, 136) 
+
+        #  Specify thickness for Detaction Box
+        self.THICKNESS = 1
 
         # Initialize id for class
         self.CLASS_IDS = [0]

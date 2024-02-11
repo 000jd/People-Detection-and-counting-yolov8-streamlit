@@ -49,7 +49,7 @@ class DetectionHelper:
         display_tracker = 'Yes'
         is_display_tracker = True if display_tracker == 'Yes' else False
         if is_display_tracker:
-            tracker_type = "botsort.yaml"
+            tracker_type = "bytetrack.yaml"
             return is_display_tracker, tracker_type
         return is_display_tracker, None
 
@@ -86,7 +86,7 @@ class DetectionHelper:
         # Draw filtered detections on the image
         for detection in filtered_result.xyxy:
             x1, y1, x2, y2 = map(int, detection)
-            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, 2)
+            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, thickness=self.settings.THICKNESS)
             
         st_frame.image(image_resized,
                     caption=f'Detected Video (Total Detections: {self.total_detections})',
@@ -209,7 +209,7 @@ class DetectionHelper:
                         # Draw filtered detections on the image
                         for detection in filtered_result.xyxy:
                             x1, y1, x2, y2 = map(int, detection)
-                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, 2)
+                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, thickness=self.settings.THICKNESS)
 
                         #res_plotted = filtered_result[0].plot()
                         st_frame.image(image_resized, caption=f'Detected Video (Total Detections: {self.total_detections})', channels="BGR", use_column_width=True)
