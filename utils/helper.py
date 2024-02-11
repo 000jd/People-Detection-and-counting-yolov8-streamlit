@@ -5,10 +5,12 @@ import utils.settings as settings_module
 import numpy as np
 import supervision as sv
 
-class AccidentDetectionHelper:
+class DetectionHelper:
     def __init__(self):
         # Initialize settings and helper modules
-        self.settings = settings_module.AccidentDetectionSettings()
+        self.settings = settings_module.DetectionSettings()
+
+        self.total_detections = 0
 
     def load_model(self, model_path):
         """
@@ -23,7 +25,7 @@ class AccidentDetectionHelper:
         model = YOLO(model_path)
         return model
     
-    def filter_detection(self, result, class_id):
+    def filter_detection(self, result, class_ids):
         """
         Filter detections for a particular class.
 
@@ -38,10 +40,7 @@ class AccidentDetectionHelper:
         detections = sv.Detections.from_ultralytics(result[0])
 
         # Filter detections for the specified class
-        filtered_detections = detections[detections.class_id == class_id]
-
-        # Convert filtered detections back to YOLOv8 result format
-        #filtered_result = filtered_detections.to_yolov8()
+        filtered_detections = detections[np.isin(detections.class_id, class_ids)]
 
         return filtered_detections
 
@@ -79,13 +78,17 @@ class AccidentDetectionHelper:
             res = model.predict(image, conf=conf)
         # Filter detections for class ID 0
         filtered_result = self.filter_detection(res, class_id=0)
+
+        # counts the number of detactions
+        self.total_detections = len(filtered_result)
+        
         # Draw filtered detections on the image
         for detection in filtered_result.xyxy:
             x1, y1, x2, y2 = map(int, detection)
             cv2.rectangle(image_resized, (x1, y1), (x2, y2), (0, 255, 0), 2)
             
         st_frame.image(image_resized,
-                    caption='Detected Video',
+                    caption=f'Detected Video (Total Detections: {self.total_detections})',
                     channels="BGR",
                     use_column_width=True
                     )
@@ -153,8 +156,6 @@ class AccidentDetectionHelper:
             st.sidebar.info("Please upload a video file.")
             return
 
-        is_display_tracker, tracker = self.display_tracker_options()
-
         with open(video_path, 'rb') as video_file:
             video_bytes = video_file.read()
         if video_bytes:
@@ -164,7 +165,7 @@ class AccidentDetectionHelper:
             try:
                 vid_cap = cv2.VideoCapture(video_path)
                 st_frame = st.empty()
-
+                
                 while vid_cap.isOpened():
                     success, image = vid_cap.read()
                     if success:
@@ -174,14 +175,18 @@ class AccidentDetectionHelper:
                         # Display the detected objects on the video frame
                         res = model.predict(image_resized, conf=conf)
                         # Filter detections for class ID 0
-                        filtered_result = self.filter_detection(res, class_id=0)
+                        filtered_result = self.filter_detection(res, class_ids=self.settings.class_ids)
+
+                        # counts the number of detactions
+                        self.total_detections = len(filtered_result)
+
                         # Draw filtered detections on the image
                         for detection in filtered_result.xyxy:
                             x1, y1, x2, y2 = map(int, detection)
-                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.custom_color, 2)
 
                         #res_plotted = filtered_result[0].plot()
-                        st_frame.image(image_resized, caption='Detected Video', channels="BGR", use_column_width=True)
+                        st_frame.image(image_resized, caption=f'Detected Video (Total Detections: {self.total_detections})', channels="BGR", use_column_width=True)
 
                     else:
                         vid_cap.release()

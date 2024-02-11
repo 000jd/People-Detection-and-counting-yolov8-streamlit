@@ -1,8 +1,33 @@
 from pathlib import Path
 import sys
 
-class AccidentDetectionSettings:
+class DetectionSettings:
+    """
+    A class for managing detection settings.
+
+    Attributes:
+        file_path (Path): Absolute path of the current file.
+        root_path (Path): Parent directory of the current file.
+        ROOT (Path): Relative path of the root directory with respect to the current working directory.
+        IMAGE (str): Constant representing image source.
+        VIDEO (str): Constant representing video source.
+        DRONE (str): Constant representing drone camera source.
+        SOURCES_LIST (list): List of available sources.
+        IMAGES_DIR (Path): Directory for storing images.
+        DEFAULT_IMAGE (Path): Default image path.
+        DEFAULT_DETECT_IMAGE (Path): Default path for the image with detection overlay.
+        VIDEO_DIR (Path): Directory for storing videos.
+        MODEL_DIR (Path): Directory for storing ML models.
+        DETECTION_MODEL (Path): Path to the detection model file.
+        WEBCAM_PATH (int/str): Path to the webcam (0 for default webcam).
+        custom_color (tuple): Custom color in (B, G, R) format for drawing rectangles.
+        class_ids (list): List of class IDs for filtering detections.
+    """
+
     def __init__(self):
+        """
+        Initialize detection settings.
+        """
         # For Getting the absolute path of the current file
         self.file_path = Path(__file__).resolve()
 
@@ -38,4 +63,8 @@ class AccidentDetectionSettings:
         # Webcam
         self.WEBCAM_PATH = 0
 
+        # Specify custom color in (B, G, R)
+        self.custom_color = (128, 0, 128)  
 
+        # Initialize id for class
+        self.class_ids = [0]

@@ -4,7 +4,7 @@ import streamlit as st
 import utils.settings as settings_module
 import utils.helper as helper_module
 
-class AccidentDetectionApp:
+class DetectionApp:
     def __init__(self):
         # Set Streamlit page configuration
         st.set_page_config(
@@ -15,8 +15,8 @@ class AccidentDetectionApp:
         )
 
         # Initialize settings and helper modules
-        self.settings = settings_module.AccidentDetectionSettings()
-        self.helper = helper_module.AccidentDetectionHelper()
+        self.settings = settings_module.DetectionSettings()
+        self.helper = helper_module.DetectionHelper()
 
         # Initialize model, confidence, source_radio, and source_img
         self.model = None
@@ -125,5 +125,5 @@ class AccidentDetectionApp:
         self.load_model(Path(self.settings.DETECTION_MODEL))
         self.show_detection_page()
 
-app = AccidentDetectionApp()
+app = DetectionApp()
 app.run()
