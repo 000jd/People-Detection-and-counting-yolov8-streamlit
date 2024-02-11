@@ -46,8 +46,7 @@ class DetectionHelper:
         return filtered_detections
 
     def display_tracker_options(self):
-        display_tracker = 'Yes'
-        is_display_tracker = True if display_tracker == 'Yes' else False
+        is_display_tracker = True
         if is_display_tracker:
             tracker_type = "bytetrack.yaml"
             return is_display_tracker, tracker_type
