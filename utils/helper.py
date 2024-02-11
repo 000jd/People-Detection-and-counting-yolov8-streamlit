@@ -85,7 +85,7 @@ class DetectionHelper:
         # Draw filtered detections on the image
         for detection in filtered_result.xyxy:
             x1, y1, x2, y2 = map(int, detection)
-            cv2.rectangle(image_resized, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, 2)
             
         st_frame.image(image_resized,
                     caption=f'Detected Video (Total Detections: {self.total_detections})',
@@ -175,7 +175,7 @@ class DetectionHelper:
                         # Display the detected objects on the video frame
                         res = model.predict(image_resized, conf=conf)
                         # Filter detections for class ID 0
-                        filtered_result = self.filter_detection(res, class_ids=self.settings.class_ids)
+                        filtered_result = self.filter_detection(res, class_ids=self.settings.CLASS_IDS)
 
                         # counts the number of detactions
                         self.total_detections = len(filtered_result)
@@ -183,7 +183,7 @@ class DetectionHelper:
                         # Draw filtered detections on the image
                         for detection in filtered_result.xyxy:
                             x1, y1, x2, y2 = map(int, detection)
-                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.custom_color, 2)
+                            cv2.rectangle(image_resized, (x1, y1), (x2, y2), self.settings.COUSTOM_COLOR, 2)
 
                         #res_plotted = filtered_result[0].plot()
                         st_frame.image(image_resized, caption=f'Detected Video (Total Detections: {self.total_detections})', channels="BGR", use_column_width=True)
