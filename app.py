@@ -100,7 +100,7 @@ class DetectionApp:
                                 use_column_width=True)
 
                         try:
-                            with st.expander("Detection Results"):
+                            with st.expander(f"Detection Persons {len(boxes)}"):
                                 for box in boxes:
                                     st.write(box.data)
                         except Exception as ex:

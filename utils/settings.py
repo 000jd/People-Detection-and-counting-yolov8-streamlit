@@ -64,7 +64,7 @@ class DetectionSettings:
         self.WEBCAM_PATH = 0
 
         # Specify custom color in (B, G, R)
-        self.COUSTOM_COLOR = (128, 0, 128)  
+        self.COUSTOM_COLOR = (59, 181, 136)  
 
         # Initialize id for class
         self.CLASS_IDS = [0]
