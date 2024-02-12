@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import os
 
 class DetectionSettings:
     """
@@ -58,7 +59,7 @@ class DetectionSettings:
 
         # ML Model config
         self.MODEL_DIR = self.ROOT / 'weights'
-        self.DETECTION_MODEL = self.MODEL_DIR / 'yolov8n.pt'
+        self.available_models = self.get_available_models()
 
         # Webcam
         self.WEBCAM_PATH = 1
@@ -71,3 +72,18 @@ class DetectionSettings:
 
         # Initialize id for class
         self.CLASS_IDS = [0]
+
+    def get_available_models(self):
+        """
+        Get a list of available model names and paths from the MODEL_DIR.
+
+        Returns:
+            List of tuples containing model names and paths.
+        """
+        available_models = []
+        for filename in os.listdir(self.MODEL_DIR):
+            if filename.endswith(".pt"):  # Assuming all model files have the extension ".pt"
+                model_name = os.path.splitext(filename)[0]
+                model_path = self.MODEL_DIR / filename
+                available_models.append((model_name, model_path))
+        return available_models

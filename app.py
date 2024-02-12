@@ -35,7 +35,9 @@ class DetectionApp:
             None
         """
         try:
-            self.model = self.helper.load_model(model_path)
+            # Get the model name from the path
+            model_name = Path(model_path).stem
+            self.model = self.helper.load_model(model_name, model_path)
         except Exception as ex:
             st.error(
                 f"Unable to load model. Check the specified path: {model_path}")
@@ -53,12 +55,24 @@ class DetectionApp:
         # Sidebar
         st.sidebar.header("Navigation")
 
+        # Add dropdown for selecting the model
+        selected_model_name = st.sidebar.selectbox("Select Model", [model[0] for model in self.settings.available_models])
+
+        # Get the path of the selected model
+        selected_model_path = next((model[1] for model in self.settings.available_models if model[0] == selected_model_name), None)
+
+        if selected_model_path is None:
+            st.error("No model selected.")
+            return
+
+        # Load the selected model
+        self.load_model(selected_model_path)
+        self.source_radio = st.sidebar.radio(
+                "Select Source", self.settings.SOURCES_LIST)
+        
         # Sidebar options
         self.confidence = float(st.sidebar.slider(
             "Select Model Confidence", 25, 100, 40)) / 100
-
-        self.source_radio = st.sidebar.radio(
-            "Select Source", self.settings.SOURCES_LIST)
 
         # Main content for Detection
         if self.source_radio == self.settings.IMAGE:
@@ -122,7 +136,8 @@ class DetectionApp:
         Returns:
             None
         """
-        self.load_model(Path(self.settings.DETECTION_MODEL))
+        model_name, model_path = self.settings.available_models[0]  # Get the first available model name and path
+        self.model = self.helper.load_model(model_name, Path(model_path))  # Load the model
         self.show_detection_page()
 
 app = DetectionApp()

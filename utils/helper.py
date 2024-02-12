@@ -13,18 +13,25 @@ class DetectionHelper:
         # Variable for storing total detactions
         self.total_detections = 0
 
-    def load_model(self, model_path):
+    def load_model(self, model_name, model_path):
         """
         Loads a YOLO object detection model from the specified model_path.
 
         Parameters:
+            model_name (str): Name of the model.
             model_path (str): The path to the YOLO model file.
 
         Returns:
             A YOLO object detection model.
         """
-        model = YOLO(model_path)
-        return model
+        try:
+            model = YOLO(model_path)
+            #st.success(f"Model '{model_name}' loaded successfully!")
+            return model
+        except Exception as ex:
+            st.error(f"Unable to load model '{model_name}'. Check the specified path: {model_path}")
+            st.error(ex)
+            return None
     
     def filter_detection(self, result, class_ids):
         """
