@@ -62,7 +62,7 @@ class DetectionSettings:
         self.available_models = self.get_available_models()
 
         # Webcam
-        self.WEBCAM_PATH = 1
+        self.WEBCAM_PATH = [0,1]
 
         # Specify custom color in (B, G, R)
         self.COUSTOM_COLOR = (59, 181, 136) 
