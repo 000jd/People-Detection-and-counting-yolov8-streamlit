@@ -143,7 +143,7 @@ class DetectionHelper:
         elif source == "Webcam":
             st.sidebar.info("Please connect webcam befor use")
             # Display dropdown to select webcam path
-            selected_webcam = st.sidebar.selectbox("Select Webcam", self.settings.WEBCAM_PATH)
+            selected_webcam = st.sidebar.selectbox("Select Webcam Path", self.settings.WEBCAM_PATH)
             source_webcam = selected_webcam
             is_display_tracker, tracker = self.display_tracker_options()
             if st.sidebar.button('Detect Objects'):
